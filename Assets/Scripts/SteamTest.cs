@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Linq;
 using Facepunch.Steamworks;
@@ -8,7 +9,12 @@ public class SteamTest : MonoBehaviour
     public static Facepunch.Steamworks.Client SteamClient;
 
 	void Start ()
-    {
+	{
+        //
+        // Configure for Unity
+        //
+	    Facepunch.Steamworks.Config.ForUnity( Application.platform.ToString() );
+
         //
         // Create the steam client using Rust's AppId
         //
@@ -36,6 +42,12 @@ public class SteamTest : MonoBehaviour
 
             GUILayout.Label( "Friend Count: " + SteamClient.Friends.AllFriends.Count() );
             GUILayout.Label( "Online Friend Count: " + SteamClient.Friends.AllFriends.Count( x => x.IsOnline ) );
+
+            if ( SteamClient.Inventory.Definitions != null )
+                GUILayout.Label( "Item Definitions: " + SteamClient.Inventory.Definitions.Length );
+
+            if ( SteamClient.Inventory.Items != null )
+                GUILayout.Label( "Item Count: " + SteamClient.Inventory.Items.Length );
         }
         else
         {
@@ -43,6 +55,14 @@ public class SteamTest : MonoBehaviour
         }
 
         GUILayout.EndArea();
+    }
+
+    void Update()
+    {
+        if ( SteamClient != null )
+        {
+            SteamClient.Update();
+        }
     }
 
 }

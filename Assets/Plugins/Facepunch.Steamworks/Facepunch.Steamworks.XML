@@ -584,6 +584,12 @@
             This gets called inside Update - so there's no need to call this manually if you're calling update
             </summary>
         </member>
+        <member name="M:Facepunch.Steamworks.Config.ForUnity(System.String)">
+            <summary>
+            Should be called before creating any interfaces, to configure Steam for Unity.
+            </summary>
+            <param name="platform">Please pass in Application.platform.ToString()</param>
+        </member>
         <member name="P:Facepunch.Steamworks.Config.UseThisCall">
             <summary>
             Some platforms allow/need CallingConvention.ThisCall. If you're crashing with argument null
