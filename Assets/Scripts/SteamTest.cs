@@ -39,7 +39,7 @@ public class SteamTest : MonoBehaviour
         }
         else
         {
-            GUILayout.Label( "SteamClient Failed" );
+            GUILayout.Label( "SteamClient Failed. Make sure appropriate files are in root, and steam is running and signed in." );
         }
 
         GUILayout.EndArea();
