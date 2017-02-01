@@ -1,0 +1,5 @@
+Steamworks needs to be able to find steam_api.dll to be able to load.
+
+It also needs steam_appid.txt to let it know which app we are.
+
+It's dumb.
