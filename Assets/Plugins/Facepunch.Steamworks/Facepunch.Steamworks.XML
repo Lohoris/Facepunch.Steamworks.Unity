@@ -32,6 +32,82 @@
             This is useful for things like tests or command line utilities etc.
             </summary>
         </member>
+        <member name="T:Facepunch.Steamworks.Leaderboard.RequestType">
+            <summary>
+                Type of leaderboard request
+            </summary>
+        </member>
+        <member name="F:Facepunch.Steamworks.Leaderboard.RequestType.Global">
+            <summary>
+                Query everyone and everything
+            </summary>
+        </member>
+        <member name="F:Facepunch.Steamworks.Leaderboard.RequestType.GlobalAroundUser">
+            <summary>
+                Query only users that are close to you geographically
+            </summary>
+        </member>
+        <member name="F:Facepunch.Steamworks.Leaderboard.RequestType.Friends">
+            <summary>
+                Only show friends of this user
+            </summary>
+        </member>
+        <member name="F:Facepunch.Steamworks.Leaderboard.Results">
+            <summary>
+                The results from the last query. Can be null.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.Leaderboard.Name">
+            <summary>
+                The name of this board, as retrieved from Steam
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.Leaderboard.TotalEntries">
+            <summary>
+                The total number of entries on this board
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.Leaderboard.IsValid">
+            <summary>
+                Returns true if this board is valid, ie, we've received
+                a positive response from Steam about it.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.Leaderboard.IsError">
+            <summary>
+                Returns true if we asked steam about this board but it returned
+                an error.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.Leaderboard.IsQuerying">
+            <summary>
+                Returns true if we're querying scores
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Leaderboard.AddScore(System.Boolean,System.Boolean,System.Int32,System.Int32[])">
+            <summary>
+                Add a score to this leaderboard.
+                Subscores are totally optional, and can be used for other game defined data such as laps etc.. although
+                they have no bearing on sorting at all.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Leaderboard.FetchScores(Facepunch.Steamworks.Leaderboard.RequestType,System.Int32,System.Int32)">
+            <summary>
+                Fetch a subset of scores. The scores end up in Results.
+            </summary>
+            <returns>Returns true if we have started the query</returns>
+        </member>
+        <member name="T:Facepunch.Steamworks.Leaderboard.Entry">
+            <summary>
+                A single entry in a leaderboard
+            </summary>
+        </member>
+        <member name="F:Facepunch.Steamworks.Leaderboard.Entry.Name">
+            <summary>
+                Note that the player's name might not be immediately available.
+                If that's the case you'll have to use Friends.GetName to find the name
+            </summary>
+        </member>
         <member name="T:Facepunch.Steamworks.Inventory.Item">
             <summary>
             An item in your inventory.
@@ -151,6 +227,13 @@
             </summary>
         </member>
         <member name="M:Facepunch.Steamworks.Inventory.CraftItem(Facepunch.Steamworks.Inventory.Item[],Facepunch.Steamworks.Inventory.Definition)">
+            <summary>
+            Crafting! Uses the passed items to buy the target item.
+            You need to have set up the appropriate exchange rules in your item
+            definitions. This assumes all the items passed in aren't stacked.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Inventory.CraftItem(Facepunch.Steamworks.Inventory.Item.Amount[],Facepunch.Steamworks.Inventory.Definition)">
             <summary>
             Crafting! Uses the passed items to buy the target item.
             You need to have set up the appropriate exchange rules in your item

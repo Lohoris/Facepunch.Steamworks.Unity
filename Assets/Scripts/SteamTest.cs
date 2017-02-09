@@ -8,6 +8,7 @@ public class SteamTest : MonoBehaviour
 {
     public static Facepunch.Steamworks.Client SteamClient;
     private ServerList.Request serverRequest;
+    private Leaderboard leaderBoard;
 
     void Start ()
 	{
@@ -37,6 +38,13 @@ public class SteamTest : MonoBehaviour
 	    {
 	        serverRequest = SteamClient.ServerList.Internet();
 	    }
+
+        //
+        // Request a leaderboard
+        //
+	    {
+            leaderBoard = SteamClient.GetLeaderboard( "TestLeaderboard", Client.LeaderboardSortMethod.Ascending, Client.LeaderboardDisplayType.Numeric );
+        }
 	}
 
     void OnGUI()
@@ -66,6 +74,35 @@ public class SteamTest : MonoBehaviour
                 if ( serverRequest.Responded.Count > 0 )
                 {
                     GUILayout.Label( "Last Server: " + serverRequest.Responded.Last().Name );
+                }
+            }
+
+            if ( leaderBoard != null )
+            {
+                GUILayout.Label( "leaderBoard.IsValid: " + leaderBoard.IsValid );
+                GUILayout.Label( "leaderBoard.IsError: " + leaderBoard.IsError );
+
+                if ( GUILayout.Button( "Refresh Leaderboard" ) )
+                {
+                    leaderBoard.FetchScores( Leaderboard.RequestType.Global, 0, 100 );
+
+                    leaderBoard.AddScore( true, true, 456, 1, 2, 3, 4, 5, 6 );
+                }
+
+                if ( leaderBoard.IsQuerying )
+                {
+                    GUILayout.Label( "QUERYING.." );
+                }
+                else if ( leaderBoard.Results != null )
+                {
+                    foreach ( var result in leaderBoard.Results )
+                    {
+                        GUILayout.Label( string.Format( "{0}. {1} ({2})", result.GlobalRank, result.Name, result.Score ) );
+                    }
+                }
+                else
+                {
+                    GUILayout.Label( "No Leaderboard results" );
                 }
             }
         }
