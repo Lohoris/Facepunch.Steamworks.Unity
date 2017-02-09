@@ -7,8 +7,9 @@ using Facepunch.Steamworks;
 public class SteamTest : MonoBehaviour
 {
     public static Facepunch.Steamworks.Client SteamClient;
+    private ServerList.Request serverRequest;
 
-	void Start ()
+    void Start ()
 	{
         //
         // Configure for Unity
@@ -29,7 +30,14 @@ public class SteamTest : MonoBehaviour
             SteamClient = null;
             return;
         }
-    }
+
+        //
+        // Request a list of servers
+        //
+	    {
+	        serverRequest = SteamClient.ServerList.Internet();
+	    }
+	}
 
     void OnGUI()
     {
@@ -48,6 +56,18 @@ public class SteamTest : MonoBehaviour
 
             if ( SteamClient.Inventory.Items != null )
                 GUILayout.Label( "Item Count: " + SteamClient.Inventory.Items.Length );
+
+            if ( serverRequest != null )
+            {
+                GUILayout.Label( "Server List: " + (serverRequest.Finished ? "Finished" : "Querying") );
+                GUILayout.Label( "Servers Responded: " + serverRequest.Responded.Count );
+                GUILayout.Label( "Servers Unresponsive: " + serverRequest.Unresponsive.Count );
+
+                if ( serverRequest.Responded.Count > 0 )
+                {
+                    GUILayout.Label( "Last Server: " + serverRequest.Responded.Last().Name );
+                }
+            }
         }
         else
         {
