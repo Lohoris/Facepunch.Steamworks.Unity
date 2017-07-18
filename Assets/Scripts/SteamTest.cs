@@ -86,12 +86,12 @@ public class SteamTest : MonoBehaviour
                 {
                     leaderBoard.FetchScores( Leaderboard.RequestType.Global, 0, 100 );
 
-                    leaderBoard.AddScore( true, true, 456, 1, 2, 3, 4, 5, 6 );
+                    leaderBoard.AddScore( true, 456, 1, 2, 3, 4, 5, 6 );
                 }
 
                 if ( leaderBoard.IsQuerying )
                 {
-                    GUILayout.Label( "QUERYING.." );
+                    GUILayout.Label( "QUERYING.." ); 
                 }
                 else if ( leaderBoard.Results != null )
                 {

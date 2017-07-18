@@ -32,6 +32,11 @@
             This is useful for things like tests or command line utilities etc.
             </summary>
         </member>
+        <member name="P:Facepunch.Steamworks.Client.Instance">
+            <summary>
+            A singleton accessor to get the current client instance.
+            </summary>
+        </member>
         <member name="P:Facepunch.Steamworks.Client.Username">
             <summary>
             Current user's Username
@@ -108,14 +113,29 @@
             True if we're in low violence mode (germans are only allowed to see the insides of bodies in porn)
             </summary>
         </member>
+        <member name="M:Facepunch.Steamworks.Client.RestartIfNecessary(System.UInt32)">
+            <summary>
+            Checks if your executable was launched through Steam and relaunches it through Steam if it wasn't.
+            If this returns true then it starts the Steam client if required and launches your game again through it, 
+            and you should quit your process as soon as possible. This effectively runs steam://run/AppId so it may 
+            not relaunch the exact executable that called it, as it will always relaunch from the version installed 
+            in your Steam library folder.
+            If it returns false, then your game was launched by the Steam client and no action needs to be taken.
+            One exception is if a steam_appid.txt file is present then this will return false regardless. This allows
+            you to develop and test without launching your game through the Steam client. Make sure to remove the 
+            steam_appid.txt file when uploading the game to your Steam depot!
+            </summary>
+        </member>
         <member name="M:Facepunch.Steamworks.Achievements.Find(System.String)">
             <summary>
             Find an achievement by name. Will be null if not found, or not ready.
             </summary>
         </member>
-        <member name="M:Facepunch.Steamworks.Achievements.Trigger(System.String)">
+        <member name="M:Facepunch.Steamworks.Achievements.Trigger(System.String,System.Boolean)">
             <summary>
-            Unlock an achievement by identifier
+            Unlock an achievement by identifier. If apply is true this will happen as expected
+            and the achievement overlay will popup etc. If it's false then you'll have to manually
+            call Stats.StoreStats() to actually trigger it.
             </summary>
         </member>
         <member name="M:Facepunch.Steamworks.Achievements.Reset(System.String)">
@@ -138,7 +158,7 @@
             If this achievement is linked to a stat this will return the progress.
             </summary>
         </member>
-        <member name="M:Facepunch.Steamworks.Achievement.Trigger">
+        <member name="M:Facepunch.Steamworks.Achievement.Trigger(System.Boolean)">
             <summary>
             Make this achievement earned
             </summary>
@@ -178,8 +198,8 @@
         </member>
         <member name="M:Facepunch.Steamworks.App.IsSubscribed(System.UInt32)">
             <summary>
-            Returns true if this user is subscribed to the specific appid
-            ie. If the user owns this game specified.
+            Checks if the active user is subscribed to a specified AppId.
+            Only use this if you need to check ownership of another game related to yours, a demo for example.
             </summary>
         </member>
         <member name="M:Facepunch.Steamworks.App.IsInstalled(System.UInt32)">
@@ -224,6 +244,21 @@
             Returns true if this friend is online
             </summary>
         </member>
+        <member name="P:Facepunch.Steamworks.SteamFriend.IsAway">
+            <summary>
+            Returns true if this friend is marked as away
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.SteamFriend.IsBusy">
+            <summary>
+            Returns true if this friend is marked as busy
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.SteamFriend.IsSnoozing">
+            <summary>
+            Returns true if this friend is marked as snoozing
+            </summary>
+        </member>
         <member name="P:Facepunch.Steamworks.SteamFriend.IsPlayingThisGame">
             <summary>
             Returns true if this friend is online and playing this game
@@ -237,6 +272,16 @@
         <member name="P:Facepunch.Steamworks.SteamFriend.CurrentAppId">
             <summary>
             The AppId this guy is playing
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.SteamFriend.GetRichPresence(System.String)">
+            <summary>
+            Returns null if the value doesn't exist
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.SteamFriend.Refresh">
+            <summary>
+            Update this friend, request the latest data from Steam's servers
             </summary>
         </member>
         <member name="T:Facepunch.Steamworks.Friends">
@@ -359,7 +404,7 @@
         </member>
         <member name="T:Facepunch.Steamworks.Leaderboard.AddScoreCallback">
             <summary>
-            Callback invoked by <see cref="M:Facepunch.Steamworks.Leaderboard.AddScore(System.Boolean,System.Int32,System.Int32[],Facepunch.Steamworks.Leaderboard.AddScoreCallback)"/> when score submission
+            Callback invoked by <see cref="!:AddScore(bool, int, int[], AddScoreCallback)"/> when score submission
             is complete.
             </summary>
             <param name="success">If true, the score was submitted</param>
@@ -370,22 +415,22 @@
             Information about a newly submitted score.
             </summary>
         </member>
-        <member name="M:Facepunch.Steamworks.Leaderboard.AddScore(System.Boolean,System.Int32,System.Int32[],Facepunch.Steamworks.Leaderboard.AddScoreCallback)">
+        <member name="M:Facepunch.Steamworks.Leaderboard.AddScore(System.Boolean,System.Int32,System.Int32[],Facepunch.Steamworks.Leaderboard.AddScoreCallback,Facepunch.Steamworks.Callbacks.FailureCallback)">
             <summary>
             Add a score to this leaderboard.
             Subscores are totally optional, and can be used for other game defined data such as laps etc.. although
             they have no bearing on sorting at all
             If onlyIfBeatsOldScore is true, the score will only be updated if it beats the existing score, else it will always
             be updated.
-            Information about the newly submitted score is passed to the optional <paramref name="callback"/>.
+            Information about the newly submitted score is passed to the optional <paramref name="onSuccess"/>.
             </summary>
         </member>
         <member name="T:Facepunch.Steamworks.Leaderboard.AttachRemoteFileCallback">
             <summary>
-            Callback invoked by <see cref="M:Facepunch.Steamworks.Leaderboard.AttachRemoteFile(Facepunch.Steamworks.RemoteFile,Facepunch.Steamworks.Leaderboard.AttachRemoteFileCallback)"/> when file attachment is complete.
+            Callback invoked by <see cref="M:Facepunch.Steamworks.Leaderboard.AttachRemoteFile(Facepunch.Steamworks.RemoteFile,Facepunch.Steamworks.Leaderboard.AttachRemoteFileCallback,Facepunch.Steamworks.Callbacks.FailureCallback)"/> when file attachment is complete.
             </summary>
         </member>
-        <member name="M:Facepunch.Steamworks.Leaderboard.AttachRemoteFile(Facepunch.Steamworks.RemoteFile,Facepunch.Steamworks.Leaderboard.AttachRemoteFileCallback)">
+        <member name="M:Facepunch.Steamworks.Leaderboard.AttachRemoteFile(Facepunch.Steamworks.RemoteFile,Facepunch.Steamworks.Leaderboard.AttachRemoteFileCallback,Facepunch.Steamworks.Callbacks.FailureCallback)">
             <summary>
             Attempt to attach a <see cref="T:Facepunch.Steamworks.RemoteStorage"/> file to the current user's leaderboard entry.
             Can be useful for storing replays along with scores.
@@ -400,11 +445,11 @@
         </member>
         <member name="T:Facepunch.Steamworks.Leaderboard.FetchScoresCallback">
             <summary>
-            Callback invoked by <see cref="M:Facepunch.Steamworks.Leaderboard.FetchScores(Facepunch.Steamworks.Leaderboard.RequestType,System.Int32,System.Int32,Facepunch.Steamworks.Leaderboard.FetchScoresCallback)"/> when
+            Callback invoked by <see cref="!:FetchScores(RequestType, int, int, FetchScoresCallback)"/> when
             a query is complete.
             </summary>
         </member>
-        <member name="M:Facepunch.Steamworks.Leaderboard.FetchScores(Facepunch.Steamworks.Leaderboard.RequestType,System.Int32,System.Int32,Facepunch.Steamworks.Leaderboard.FetchScoresCallback)">
+        <member name="M:Facepunch.Steamworks.Leaderboard.FetchScores(Facepunch.Steamworks.Leaderboard.RequestType,System.Int32,System.Int32,Facepunch.Steamworks.Leaderboard.FetchScoresCallback,Facepunch.Steamworks.Callbacks.FailureCallback)">
             <summary>
                 Fetch a subset of scores. The scores are passed to <paramref name="callback"/>.
             </summary>
@@ -421,14 +466,89 @@
                 If that's the case you'll have to use Friends.GetName to find the name
             </summary>
         </member>
-        <member name="T:Facepunch.Steamworks.RemoteFileWriteStream">
+        <member name="E:Facepunch.Steamworks.MicroTransactions.OnAuthorizationResponse">
             <summary>
-            Stream used to write to a <see cref="T:Facepunch.Steamworks.RemoteFile"/>.
+            Called on the MicroTxnAuthorizationResponse_t event
             </summary>
         </member>
-        <member name="M:Facepunch.Steamworks.RemoteFileWriteStream.Cancel">
+        <member name="T:Facepunch.Steamworks.RemoteStorage">
             <summary>
-            Close the stream without saving the file to remote storage.
+            Handles Steam Cloud related actions.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.RemoteStorage.IsCloudEnabledForAccount">
+            <summary>
+            True if Steam Cloud is currently enabled by the current user.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.RemoteStorage.IsCloudEnabledForApp">
+            <summary>
+            True if Steam Cloud is currently enabled for this app by the current user.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.RemoteStorage.FileCount">
+            <summary>
+            Gets the total number of files in the current user's remote storage for the current game.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.RemoteStorage.Files">
+            <summary>
+            Gets all files in the current user's remote storage for the current game.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.RemoteStorage.CreateFile(System.String)">
+            <summary>
+            Creates a new <see cref="T:Facepunch.Steamworks.RemoteFile"/> with the given <paramref name="path"/>.
+            If a file exists at that path it will be overwritten.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.RemoteStorage.OpenFile(System.String)">
+            <summary>
+            Opens the file if it exists, else returns null;
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.RemoteStorage.WriteString(System.String,System.String,System.Text.Encoding)">
+            <summary>
+            Write all text to the file at the specified path. This
+            overwrites the contents - it does not append.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.RemoteStorage.WriteBytes(System.String,System.Byte[])">
+            <summary>
+            Write all data to the file at the specified path. This
+            overwrites the contents - it does not append.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.RemoteStorage.ReadString(System.String,System.Text.Encoding)">
+            <summary>
+            Read the entire contents of the file as a string.
+            Returns null if the file isn't found.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.RemoteStorage.ReadBytes(System.String)">
+            <summary>
+            Read the entire contents of the file as raw data.
+            Returns null if the file isn't found.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.RemoteStorage.FileExists(System.String)">
+            <summary>
+            Gets whether a file exists in remote storage at the given <paramref name="path"/>.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.RemoteStorage.QuotaUsed">
+            <summary>
+            Number of bytes used out of the user's total quota
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.RemoteStorage.QuotaTotal">
+            <summary>
+            Total quota size in bytes
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.RemoteStorage.QuotaRemaining">
+            <summary>
+            Number of bytes remaining out of the user's total quota
             </summary>
         </member>
         <member name="T:Facepunch.Steamworks.RemoteFile">
@@ -478,7 +598,7 @@
         </member>
         <member name="T:Facepunch.Steamworks.RemoteFile.DownloadCallback">
             <summary>
-            Callback invoked by <see cref="M:Facepunch.Steamworks.RemoteFile.Download(Facepunch.Steamworks.RemoteFile.DownloadCallback)"/> when a file download is complete.
+            Callback invoked by <see cref="M:Facepunch.Steamworks.RemoteFile.Download(Facepunch.Steamworks.RemoteFile.DownloadCallback,Facepunch.Steamworks.Callbacks.FailureCallback)"/> when a file download is complete.
             </summary>
         </member>
         <member name="M:Facepunch.Steamworks.RemoteFile.GetDownloadProgress(System.Int32@,System.Int32@)">
@@ -488,7 +608,7 @@
             </summary>
             <returns>True if the file is downloading</returns>
         </member>
-        <member name="M:Facepunch.Steamworks.RemoteFile.Download(Facepunch.Steamworks.RemoteFile.DownloadCallback)">
+        <member name="M:Facepunch.Steamworks.RemoteFile.Download(Facepunch.Steamworks.RemoteFile.DownloadCallback,Facepunch.Steamworks.Callbacks.FailureCallback)">
             <summary>
             Attempts to start downloading a shared file.
             </summary>
@@ -512,10 +632,10 @@
         </member>
         <member name="T:Facepunch.Steamworks.RemoteFile.ShareCallback">
             <summary>
-            Callback invoked by <see cref="M:Facepunch.Steamworks.RemoteFile.Share(Facepunch.Steamworks.RemoteFile.ShareCallback)"/> when file sharing is complete.
+            Callback invoked by <see cref="M:Facepunch.Steamworks.RemoteFile.Share(Facepunch.Steamworks.RemoteFile.ShareCallback,Facepunch.Steamworks.Callbacks.FailureCallback)"/> when file sharing is complete.
             </summary>
         </member>
-        <member name="M:Facepunch.Steamworks.RemoteFile.Share(Facepunch.Steamworks.RemoteFile.ShareCallback)">
+        <member name="M:Facepunch.Steamworks.RemoteFile.Share(Facepunch.Steamworks.RemoteFile.ShareCallback,Facepunch.Steamworks.Callbacks.FailureCallback)">
             <summary>
             Attempt to publish this file for other users to download.
             </summary>
@@ -527,47 +647,15 @@
             </summary>
             <returns>True if the file could be deleted</returns>
         </member>
-        <member name="T:Facepunch.Steamworks.RemoteStorage">
+        <member name="T:Facepunch.Steamworks.RemoteFileWriteStream">
             <summary>
-            Handles Steam Cloud related actions.
+            Stream used to write to a <see cref="T:Facepunch.Steamworks.RemoteFile"/>.
             </summary>
         </member>
-        <member name="P:Facepunch.Steamworks.RemoteStorage.IsCloudEnabledForAccount">
+        <member name="M:Facepunch.Steamworks.RemoteFileWriteStream.Cancel">
             <summary>
-            True if Steam Cloud is currently enabled by the current user.
+            Close the stream without saving the file to remote storage.
             </summary>
-        </member>
-        <member name="P:Facepunch.Steamworks.RemoteStorage.IsCloudEnabledForApp">
-            <summary>
-            True if Steam Cloud is currently enabled for this app by the current user.
-            </summary>
-        </member>
-        <member name="P:Facepunch.Steamworks.RemoteStorage.FileCount">
-            <summary>
-            Gets the total number of files in the current user's remote storage for the current game.
-            </summary>
-        </member>
-        <member name="P:Facepunch.Steamworks.RemoteStorage.Files">
-            <summary>
-            Gets all files in the current user's remote storage for the current game.
-            </summary>
-        </member>
-        <member name="M:Facepunch.Steamworks.RemoteStorage.CreateFile(System.String)">
-            <summary>
-            Creates a new <see cref="T:Facepunch.Steamworks.RemoteFile"/> with the given <paramref name="path"/>.
-            If a file exists at that path it will be overwritten.
-            </summary>
-        </member>
-        <member name="M:Facepunch.Steamworks.RemoteStorage.FileExists(System.String)">
-            <summary>
-            Gets whether a file exists in remote storage at the given <paramref name="path"/>.
-            </summary>
-        </member>
-        <member name="M:Facepunch.Steamworks.RemoteStorage.GetQuota(System.UInt64@,System.UInt64@)">
-            <summary>
-            Gets both the total and available remote storage in bytes for this user and app.
-            </summary>
-            <returns>True if successful</returns>
         </member>
         <member name="M:Facepunch.Steamworks.ServerList.Custom(System.Collections.Generic.IEnumerable{System.String})">
             <summary>
@@ -661,6 +749,25 @@
         <member name="M:Facepunch.Steamworks.ServerList.Server.RemoveFromFavourites">
             <summary>
             Remove this server from our favourite list
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Stats.Set(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Set a stat value. This will automatically call StoreStats() after a successful call
+            unless you pass false as the last argument.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Stats.Set(System.String,System.Single,System.Boolean)">
+            <summary>
+            Set a stat value. This will automatically call StoreStats() after a successful call
+            unless you pass false as the last argument.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Stats.Add(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Adds this amount to the named stat. Internally this calls Get() and adds 
+            to that value. Steam doesn't provide a mechanism for atomically increasing
+            stats like this, this functionality is added here as a convenience.
             </summary>
         </member>
         <member name="P:Facepunch.Steamworks.Voice.OptimalSampleRate">
@@ -818,6 +925,14 @@
         <member name="M:Facepunch.Steamworks.Inventory.Stack(Facepunch.Steamworks.Inventory.Item,Facepunch.Steamworks.Inventory.Item,System.Int32)">
             <summary>
             Stack source item onto dest item
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Inventory.GenerateItem(Facepunch.Steamworks.Inventory.Definition,System.Int32)">
+            <summary>
+            This is used to grant a specific item to the user. This should 
+            only be used for development prototyping, from a trusted server, 
+            or if you don't care about hacked clients granting arbitrary items. 
+            This call can be disabled by a setting on Steamworks.
             </summary>
         </member>
         <member name="T:Facepunch.Steamworks.Inventory.Definition">
@@ -1176,38 +1291,25 @@
             Game servers offer a limited amount of Steam functionality - and don't require the Steam client.
             </summary>
         </member>
-        <member name="M:Facepunch.Steamworks.Server.#ctor(System.UInt32,System.UInt32,System.UInt16,System.UInt16,System.UInt16,System.Boolean,System.String)">
+        <member name="P:Facepunch.Steamworks.Server.Instance">
+            <summary>
+            A singleton accessor to get the current client instance.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Server.#ctor(System.UInt32,Facepunch.Steamworks.ServerInit)">
             <summary>
             Initialize a Steam Server instance
-            </summary>
-            <param name="appId">You game's AppId</param>
-            <param name="IpAddress">The IP Address to bind to. Can be 0 to mean "any".</param>
-            <param name="SteamPort">Port to talk to steam on, can be anything as long as it's not used.".</param>
-            <param name="GamePort">The port you game listens to for connections.</param>
-            <param name="QueryPort">The port Steam should use for server queries.</param>
-            <param name="Secure">True if you want to use VAC</param>
-            <param name="VersionString">A string defining version, ie "1001"</param>
-        </member>
-        <member name="M:Facepunch.Steamworks.Server.#ctor(System.UInt32,System.UInt32,System.UInt16,System.UInt16,System.Boolean,System.String)">
-            <summary>
-            Initialize a Steam Server instance
-            </summary>
-            <param name="appId">You game's AppId</param>
-            <param name="IpAddress">The IP Address to bind to. Can be 0 to mean "any".</param>
-            <param name="GamePort">The port you game listens to for connections.</param>
-            <param name="QueryPort">The port Steam should use for server queries.</param>
-            <param name="Secure">True if you want to use VAC</param>
-            <param name="VersionString">A string defining version, ie "1001"</param>
-        </member>
-        <member name="M:Facepunch.Steamworks.Server.#ctor(System.UInt32,System.UInt32,System.UInt16,System.Boolean,System.String)">
-            <summary>
-            Initialize a server - query port will use the same as GamePort (MASTERSERVERUPDATERPORT_USEGAMESOCKETSHARE)
-            This means you'll need to detect and manually process and reply to server queries.
             </summary>
         </member>
         <member name="M:Facepunch.Steamworks.Server.Update">
             <summary>
             Should be called at least once every frame
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.Server.DedicatedServer">
+            <summary>
+            Sets whether this should be marked as a dedicated server.
+            If not, it is assumed to be a listen server.
             </summary>
         </member>
         <member name="P:Facepunch.Steamworks.Server.MaxPlayers">
@@ -1234,7 +1336,7 @@
         </member>
         <member name="P:Facepunch.Steamworks.Server.Product">
             <summary>
-            Gets or sets the current product. This isn't really used.
+            Gets the current product
             </summary>
         </member>
         <member name="P:Facepunch.Steamworks.Server.GameDescription">
@@ -1263,6 +1365,12 @@
             Log onto Steam anonymously.
             </summary>
         </member>
+        <member name="P:Facepunch.Steamworks.Server.LoggedOn">
+            <summary>
+            Returns true if the server is connected and registered with the Steam master server
+            You should have called LogOnAnonymous etc on startup.
+            </summary>
+        </member>
         <member name="M:Facepunch.Steamworks.Server.SetKey(System.String,System.String)">
             <summary>
             Sets a Key Value. These can be anything you like, and are accessible
@@ -1278,12 +1386,6 @@
             to server queries up to date.
             </summary>
         </member>
-        <member name="P:Facepunch.Steamworks.Server.LoggedOn">
-            <summary>
-            Returns true if the server is connected and registered with the Steam master server
-            You should have called LogOnAnonymous etc on startup.
-            </summary>
-        </member>
         <member name="M:Facepunch.Steamworks.Server.Dispose">
             <summary>
             Shutdown interface, disconnect from Steam
@@ -1294,6 +1396,24 @@
             To the best of its ability this tries to get the server's
             current public ip address. Be aware that this is likely to return
             null for the first few seconds after initialization.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.Server.AutomaticHeartbeats">
+            <summary>
+            Enable or disable heartbeats, which are sent regularly to the master server.
+            Enabled by default.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.Server.AutomaticHeartbeatRate">
+            <summary>
+            Set heartbeat interval, if automatic heartbeats are enabled.
+            You can leave this at the default.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Server.ForceHeartbeat">
+            <summary>
+            Force send a heartbeat to the master server instead of waiting
+            for the next automatic update (if you've left them enabled)
             </summary>
         </member>
         <member name="F:Facepunch.Steamworks.ServerAuth.OnAuthChange">
@@ -1358,6 +1478,43 @@
         <member name="M:Facepunch.Steamworks.ServerQuery.Handle(System.Byte[],System.Int32,System.UInt32,System.UInt16)">
             <summary>
             We have received a server query on our game port. Pass it to Steam to handle.
+            </summary>
+        </member>
+        <member name="T:Facepunch.Steamworks.ServerInit">
+            <summary>
+            Used to set up the server. 
+            The variables in here are all required to be set, and can't be changed once the server is created.
+            </summary>
+        </member>
+        <member name="F:Facepunch.Steamworks.ServerInit.VersionString">
+            <summary>
+            The version string is usually in the form x.x.x.x, and is used by the master server to detect when the server is out of date.
+            If you go into the dedicated server tab on steamworks you'll be able to server the latest version. If this version number is
+            less than that latest version then your server won't show.
+            </summary>
+        </member>
+        <member name="F:Facepunch.Steamworks.ServerInit.ModDir">
+            <summary>
+            This should be the same directory game where gets installed into. Just the folder name, not the whole path. I.e. "Rust", "Garrysmod".
+            </summary>
+        </member>
+        <member name="F:Facepunch.Steamworks.ServerInit.GameDescription">
+            <summary>
+            The game description. Setting this to the full name of your game is recommended.
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.ServerInit.RandomSteamPort">
+            <summary>
+            Set the Steam quert port 
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.ServerInit.QueryShareGamePort">
+            <summary>
+            If you pass MASTERSERVERUPDATERPORT_USEGAMESOCKETSHARE into usQueryPort, then it causes the game server API to use 
+            "GameSocketShare" mode, which means that the game is responsible for sending and receiving UDP packets for the master
+            server updater.
+            
+            More info about this here: https://partner.steamgames.com/doc/api/ISteamGameServer#HandleIncomingPacket
             </summary>
         </member>
         <member name="T:Facepunch.Steamworks.ServerStats">
