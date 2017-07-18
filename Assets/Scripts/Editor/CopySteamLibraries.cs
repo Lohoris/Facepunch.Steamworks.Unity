@@ -3,10 +3,10 @@ using UnityEditor.Callbacks;
 
 namespace Facepunch.Editor
 {
-    public class Build
+    public class CopySteamLibraries
     {
         [PostProcessBuild( 1 )]
-        public static void OnPostProcessBuild( BuildTarget target, string pathToBuiltProject )
+        public static void Copy( BuildTarget target, string pathToBuiltProject )
         {
             //
             // Only steam
@@ -31,6 +31,12 @@ namespace Facepunch.Editor
 
             if ( target == BuildTarget.StandaloneOSXUniversal )
                 FileUtil.ReplaceFile( "libsteam_api.dylib", System.IO.Path.GetDirectoryName( pathToBuiltProject ) + "/libsteam_api.dylib" );
+
+            if ( target == BuildTarget.StandaloneLinux64 || target == BuildTarget.StandaloneLinuxUniversal )
+                FileUtil.ReplaceFile( "libsteam_api64.so", System.IO.Path.GetDirectoryName( pathToBuiltProject ) + "/libsteam_api64.so" );
+
+            if ( target == BuildTarget.StandaloneLinux || target == BuildTarget.StandaloneLinuxUniversal )
+                FileUtil.ReplaceFile( "libsteam_api.so", System.IO.Path.GetDirectoryName( pathToBuiltProject ) + "/libsteam_api.so" );
         }
 
     }
